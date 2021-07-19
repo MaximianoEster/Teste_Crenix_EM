@@ -6,16 +6,21 @@ using UnityEngine;
 
 public class LevelController : MonoBehaviour
 {
+    [Header("Gear List")]
     [SerializeField] private List<GearController> _gearList = new List<GearController>();
-    [SerializeField] private List<SlotController> _slotControllerList = new List<SlotController>();
     
+    [Space, Header("Slot List")]
+    [SerializeField] private List<SlotController> _emptySlotList = new List<SlotController>();
+    [SerializeField] private List<SlotController> _inventorySlotList = new List<SlotController>();
+    
+    [Space, Header("Dialogue System")]
     [SerializeField] private TMP_Text _nuggetDialogueText = default;
     [SerializeField] private DialogueData _dialogueData = default;
     
     private string _currentDialogueText = String.Empty;
         
-    private int _gearCorrectPosAmount = 0;
-    private int _gearSequenceAmount = default;
+    private int _gearCorrectPosCount = 0;
+    private int _gearTotalSequenceCount = default;
     private bool _canStartGearsRotation = false;
     
     private void Start()
@@ -23,26 +28,14 @@ public class LevelController : MonoBehaviour
         InitializePuzzleSystem();
     }
     
-    private void InitializePuzzleSystem()
-    {
-        _gearSequenceAmount = _gearList.Count;
-        ResetPuzzle();
-       
-        for (int i = 0; i < _gearList.Count; i++)
-        {
-            _gearList[i].OnGearPositioned += CheckGearPosition;
-            _gearList[i].OnItemDrag += CheckGearPosition;
-        }
-    }
-
     public void ResetPuzzle()
     {
         for (int i = 0; i < _gearList.Count; i++)
         {
-            _gearList[i].ResetPosition(_slotControllerList[i].OnResetSlot());
+            _gearList[i].ResetPosition(_inventorySlotList[i].OnResetSlot());
         }
 
-        _gearCorrectPosAmount = 0;
+        _gearCorrectPosCount = 0;
         CheckGearSequence();
     }
 
@@ -50,19 +43,19 @@ public class LevelController : MonoBehaviour
     {
         if (isOnCorrectPosition)
         {
-            _gearCorrectPosAmount++;
+            _gearCorrectPosCount++;
         }
         else
         {
-            _gearCorrectPosAmount--;
+            _gearCorrectPosCount--;
         }
-        Debug.Log("Sequence => "+ _gearCorrectPosAmount);
+        
         CheckGearSequence();
     }
 
     private void CheckGearSequence()
     {
-        if (_gearCorrectPosAmount == _gearSequenceAmount)
+        if (_gearCorrectPosCount == _gearTotalSequenceCount)
         {
             _canStartGearsRotation = true;
             _currentDialogueText = _dialogueData.CompleteTask;
@@ -74,7 +67,6 @@ public class LevelController : MonoBehaviour
         }
 
         _nuggetDialogueText.text = _currentDialogueText;
-        Debug.Log(_currentDialogueText);
         UpdateGearsMovement(_canStartGearsRotation);
     }
 
@@ -83,6 +75,33 @@ public class LevelController : MonoBehaviour
         for (int i = 0; i < _gearList.Count; i++)
         {
             _gearList[i].UpdateMovement(canRotate );
+        }
+    }
+    
+    private void InitializePuzzleSystem()
+    {
+        _gearTotalSequenceCount = _gearList.Count;
+        
+        InitializeAllSlots();
+        SubscribeOnGearEvents();
+        ResetPuzzle();
+    }
+
+    private void InitializeAllSlots()
+    {
+        for (int i = 0; i < _gearTotalSequenceCount; i++)
+        {
+            _emptySlotList[i].InitializeSlot();
+            _inventorySlotList[i].InitializeSlot();
+        }
+    }
+
+    private void SubscribeOnGearEvents()
+    {
+        for (int i = 0; i < _gearList.Count; i++)
+        {
+            _gearList[i].OnGearPositioned += CheckGearPosition;
+            _gearList[i].ItemStartDrag += CheckGearPosition;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Packages.Rider.Editor.UnitTesting;
 using UnityEngine;
 
-public class GearController : DragDropItem, IDragdable
+public class GearController : DragDropItem, IDragItem
 {
     public delegate void GearHandler(bool isOnCorrectPosition);
     public event GearHandler OnGearPositioned;
@@ -14,7 +14,7 @@ public class GearController : DragDropItem, IDragdable
     
     private GearMovementDirection _gearMovementDirection = default;
     
-    public void DetectSlot(SlotType currentSlotType)
+    public void DetectSlotType(SlotType currentSlotType)
     {
         switch (currentSlotType)
         {
@@ -29,8 +29,9 @@ public class GearController : DragDropItem, IDragdable
         }
     }
 
-    public void UpdatePosition(RectTransform newPos)
+    public void UpdateGearSettings(RectTransform newPos, GearMovementDirection gearMovementDirection)
     {
+        _gearMovementDirection = gearMovementDirection;
         _rectTransform.position = newPos.position;
     }
 
@@ -38,7 +39,6 @@ public class GearController : DragDropItem, IDragdable
     {
         if (canRotate)
         {
-            //_animator.SetTrigger(AnimationClipsNames.LeftMovement);
             CheckMovementDirection();
         }
         else
@@ -46,12 +46,7 @@ public class GearController : DragDropItem, IDragdable
             _animator.SetTrigger(AnimationClipsNames.Idle);
         }
     }
-
-    public void UpdateMovementDirection(GearMovementDirection gearMovementDirection)
-    {
-        _gearMovementDirection = gearMovementDirection;
-    }
-
+    
     public void ResetPosition(Vector3 pos)
     {
         _rectTransform.position = pos;

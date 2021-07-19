@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class DragDropItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHandler
 {
     public delegate void DragHandler(bool onCorrectPosition);
-    public event DragHandler OnItemDrag;
+    public event DragHandler ItemStartDrag;
     
     [Header("Drag and Drop Settings")]
     [SerializeField] protected RectTransform _rectTransform = default;
@@ -22,7 +22,7 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
         if (_isOnCorretPosition)
         {
             _isOnCorretPosition = false;
-            OnItemDrag?.Invoke(_isOnCorretPosition);
+            ItemStartDrag?.Invoke(_isOnCorretPosition);
         }
     }
 
@@ -35,5 +35,4 @@ public class DragDropItem : MonoBehaviour, IBeginDragHandler, IEndDragHandler, I
     {
         _rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;
     }
-    
 }

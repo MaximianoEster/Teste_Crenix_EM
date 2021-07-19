@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class SlotController : MonoBehaviour,IDropHandler
 {
-    
+    [Header("Slot Settings")]
     [SerializeField] private RectTransform _rectTransformSlot = default;
     [SerializeField] private SlotData _slotData = default;
     
@@ -14,25 +14,15 @@ public class SlotController : MonoBehaviour,IDropHandler
     {
         if (eventData.pointerDrag != null)
         {
-            if (eventData.pointerDrag.TryGetComponent(out IDragdable item))
+            if (eventData.pointerDrag.TryGetComponent(out IDragItem item))
             {
-                item.UpdatePosition(_rectTransformSlot);
-                item.UpdateMovementDirection(_gearGearMovementDirection);
-                item.DetectSlot(_slotType);
+                item.UpdateGearSettings(_rectTransformSlot, _gearGearMovementDirection);
+                item.DetectSlotType(_slotType);
             }
-        }
-        else
-        {
-            Debug.Log("Null");
         }
     }
 
-    private void Start()
-    {
-        InitializeSlot();
-    }
-    
-    private void InitializeSlot()
+    public void InitializeSlot()
     {
         _slotType = _slotData.SlotType;
         _gearGearMovementDirection = _slotData.GearMovementDirection;
