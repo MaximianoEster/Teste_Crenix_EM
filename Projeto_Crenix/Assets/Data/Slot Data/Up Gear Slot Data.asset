@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Up Gear Slot Data
   m_EditorClassIdentifier: 
   SlotType: 2
-  GearMovementDirection: 2
+  GearMovementDirection: 3
